@@ -24,7 +24,7 @@
                     <input type="text" name="title" id="task-title" placeholder="Enter new task" class="form-control" required>
                 </div>
                 <div class="mr-3">
-                    <button data-mdb-ripple-init type="submit" class="btn btn-success">Submit</button>
+                    <button data-mdb-ripple-init type="submit" class="btn btn-success"  data-mdb-ripple-init>Submit</button>
                 </div>
             </div>
 
@@ -41,15 +41,19 @@
         tasks.forEach(task => {
             const li = document.createElement('li');
             li.classList.add('list-group-item', 'px-3', 'border-0', 'rounded-3', 'list-group-item-light', 'mb-3', 'shadow-3' );
-
             li.textContent = task.title;
-            // Add buttons for delete and update
+
+            // delete button
             const deleteButton = document.createElement('button');
             deleteButton.textContent = 'Delete';
             deleteButton.onclick = () => deleteTask(task.id);
+            deleteButton.className = "btn btn-danger mx-2";
             li.appendChild(deleteButton);
+
+            // update button
             const updateButton = document.createElement('button');
             updateButton.textContent = 'Update';
+            updateButton.className = "btn btn-info";
             updateButton.onclick = () => {
                 const newTitle = prompt('Update task title', task.title);
                 if(newTitle) updateTask(task.id, newTitle);
