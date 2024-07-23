@@ -1,18 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+<!--    <meta http-equiv="refresh" content="1">-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo List</title>
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <!-- MDB -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.min.css" rel="stylesheet" />
 </head>
-<body>
-<h1>Todo List</h1>
-<form action="/add" method="post">
-    <input type="text" name="title" placeholder="Enter new task" required>
-    <button type="submit">Add Task</button>
-</form>
-<ul id="task-list"></ul>
+<body class="container-fluid">
 
+<div class="row d-flex justify-content-center mt-5">
+    <artice class="col-md-6">
+        <h1>Todo List</h1>
+        <form class="mb-3" id="task-form">
+            <div class="h-100 d-flex justify-content-center align-items-center">
+                <div data-mdb-input-init class="form-outline  flex-fill pl-3">
+                    <input type="text" name="title" id="task-title" placeholder="Enter new task" class="form-control" required>
+                </div>
+                <div class="mr-3">
+                    <button data-mdb-ripple-init type="submit" class="btn btn-success">Submit</button>
+                </div>
+            </div>
+
+        </form>
+        <ul class="list-group list-group-light" id="task-list"></ul>
+    </artice>
+</div>
 <script>
     async function loadTasks() {
         const response = await fetch('/tasks');
@@ -21,11 +40,60 @@
         taskList.innerHTML = '';
         tasks.forEach(task => {
             const li = document.createElement('li');
+            li.classList.add('list-group-item', 'px-3', 'border-0', 'rounded-3', 'list-group-item-light', 'mb-3', 'shadow-3' );
+
             li.textContent = task.title;
+            // Add buttons for delete and update
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.onclick = () => deleteTask(task.id);
+            li.appendChild(deleteButton);
+            const updateButton = document.createElement('button');
+            updateButton.textContent = 'Update';
+            updateButton.onclick = () => {
+                const newTitle = prompt('Update task title', task.title);
+                if(newTitle) updateTask(task.id, newTitle);
+            };
+            li.appendChild(updateButton);
             taskList.appendChild(li);
         });
     }
+    async function addTask(event) {
+        event.preventDefault();
+        const formData = new FormData(document.getElementById('task-form'));
+        await fetch('/add', {
+            method: 'POST',
+            body: formData
+        });
+        loadTasks();
+    }
+    async function deleteTask(id) {
+        await fetch(`/delete/${id}`, {
+            method: 'DELETE'
+        });
+        loadTasks();
+    }
+    async function updateTask(id, newTitle) {
+        const formData = new FormData();
+        formData.append('title', newTitle);
+        await fetch(`/update/${id}`, {
+            method: 'PUT',
+            body: formData
+        });
+        loadTasks();
+    }
+    document.getElementById('task-form').addEventListener('submit', addTask);
     document.addEventListener('DOMContentLoaded', loadTasks);
 </script>
+<!-- MDB -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.umd.min.js"></script>
+<script type="text/javascript" >
+    // Initialization for ES Users
+    import { Input, Ripple, initMDB } from "mdb-ui-kit";
+
+    initMDB({ Input, Ripple });
+</script>
+
 </body>
+
 </html>
