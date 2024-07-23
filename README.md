@@ -11,7 +11,7 @@ go run main.go
 ```
 
 ## Source Code
-- web framework: goFiber http://goFiber.oi
+- web framework: goFiber http://goFiber.oi/
 - css framework: mdbootstrap: https://mdbootstrap.com/
 
 
