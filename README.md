@@ -6,6 +6,7 @@ This is a TODO list for goLang projects.
 
 ### Start Commands
 ```bash
+git clone https://github.com/asakew/goLang-TODO.git
 go get github.com/gofiber/fiber/v2
 go run main.go
 ```
