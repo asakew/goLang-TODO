@@ -3,7 +3,7 @@ This is a TODO list for goLang projects.
 - Todo app + goFiber + Postgres + GORM + index.html get: add, delete, update
 
 ## Demo Screenshot
-![github](/public/img/screenshot.png)
+![github](/views/img/screenshot.png)
 
 ### Start Commands
 ```bash
