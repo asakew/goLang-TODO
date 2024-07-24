@@ -11,7 +11,7 @@
             todoList.innerHTML = '';
             todos.forEach(todo => {
                 let li = document.createElement('li');
-                li.textContent = `${todo.title} - ${todo.description} - ${todo.completed ? 'Completed' : 'Pending'}`;
+                li.textContent = `${todo.title} - ${todo.description}`;
                 todoList.appendChild(li);
             });
         }
@@ -63,15 +63,6 @@
     <input type="text" id="description" placeholder="Description">
     <button onclick="addTodo()">Add Todo</button>
 </div>
-<div>
-    <input type="text" id="todo-id-update" placeholder="Todo ID to update">
-    <input type="text" id="update-title" placeholder="New Title">
-    <input type="text" id="update-description" placeholder="New Description">
-    <button onclick="updateTodo()">Update Todo</button>
-</div>
-<div>
-    <input type="text" id="todo-id-delete" placeholder="Todo ID to delete">
-    <button onclick="deleteTodo()">Delete Todo</button>
 </div>
 <ul id="todo-list"></ul>
 </body>
