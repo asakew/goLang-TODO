@@ -1,7 +1,8 @@
 # goLang-TODO
 This is a TODO list for goLang projects.
 - goFiber + Postgres + GORM
-
+  Todo app + goFiber + Postgres + GORM + index.html get: add, delete, update
+- 
 ## Demo Screenshot
 ![github](/public/img/screenshot.png)
 

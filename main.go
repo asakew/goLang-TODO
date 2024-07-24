@@ -2,75 +2,76 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"log"
-	"strconv"
 )
-
-type Task struct {
-	ID    int    `json:"id"`
-	Title string `json:"title"`
-}
-
-var tasks []Task
-var idCounter int
 
 func main() {
 	app := fiber.New()
 
-	// Serve static files for HTML
-	app.Static("/", "./public")
+	ConnectDatabase()
 
-	// Route to display the form and list of tasks
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendFile("./public/index.html")
+		return c.SendFile("index.html")
 	})
 
-	// Add a task
-	app.Post("/add", func(c *fiber.Ctx) error {
-		title := c.FormValue("title")
-		if title != "" {
-			idCounter++
-			task := Task{ID: idCounter, Title: title}
-			tasks = append(tasks, task)
-		}
-		return c.Redirect("/")
-	})
+	app.Get("/todos", GetTodos)
+	app.Post("/todos", CreateTodo)
+	app.Get("/todos/:id", GetTodo)
+	app.Put("/todos/:id", UpdateTodo)
+	app.Delete("/todos/:id", DeleteTodo)
 
-	// Delete a task
-	app.Delete("/delete/:id", func(c *fiber.Ctx) error {
-		id, err := strconv.Atoi(c.Params("id"))
-		if err != nil {
-			return c.Status(400).SendString("Invalid Task ID")
-		}
-		for i, task := range tasks {
-			if task.ID == id {
-				tasks = append(tasks[:i], tasks[i+1:]...)
-				return c.JSON(task)
-			}
-		}
-		return c.Status(404).SendString("Task Not Found")
-	})
+	app.Listen(":3000")
+}
 
-	// Update a task
-	app.Put("/update/:id", func(c *fiber.Ctx) error {
-		id, err := strconv.Atoi(c.Params("id"))
-		if err != nil {
-			return c.Status(400).SendString("Invalid Task ID")
-		}
-		newTitle := c.FormValue("title")
-		for i, task := range tasks {
-			if task.ID == id {
-				tasks[i].Title = newTitle
-				return c.JSON(tasks[i])
-			}
-		}
-		return c.Status(404).SendString("Task Not Found")
-	})
+func GetTodos(c *fiber.Ctx) error {
+	var todos []Todo
+	DB.Find(&todos)
+	return c.JSON(todos)
+}
 
-	// List all tasks
-	app.Get("/tasks", func(c *fiber.Ctx) error {
-		return c.JSON(tasks)
-	})
+func CreateTodo(c *fiber.Ctx) error {
+	todo := new(Todo)
+	if err := c.BodyParser(todo); err != nil {
+		return c.Status(400).SendString(err.Error())
+	}
+	DB.Create(&todo)
+	return c.JSON(todo)
+}
 
-	log.Fatal(app.Listen(":3000"))
+func GetTodo(c *fiber.Ctx) error {
+	id := c.Params("id")
+	var todo Todo
+	if result := DB.First(&todo, id); result.Error != nil {
+		return fiber.NewError(fiber.StatusNotFound, "Todo not found")
+	}
+	return c.JSON(todo)
+}
+
+func UpdateTodo(c *fiber.Ctx) error {
+	id := c.Params("id")
+	var todo Todo
+	if result := DB.First(&todo, id); result.Error != nil {
+		return fiber.NewError(fiber.StatusNotFound, "Todo not found")
+	}
+
+	updatedTodo := new(Todo)
+	if err := c.BodyParser(updatedTodo); err != nil {
+		return c.Status(400).SendString(err.Error())
+	}
+
+	todo.Title = updatedTodo.Title
+	todo.Description = updatedTodo.Description
+	todo.Completed = updatedTodo.Completed
+	DB.Save(&todo)
+	return c.JSON(todo)
+}
+
+func DeleteTodo(c *fiber.Ctx) error {
+	id := c.Params("id")
+	var todo Todo
+	if result := DB.First(&todo, id); result.Error != nil {
+		return fiber.NewError(fiber.StatusNotFound, "Todo not found")
+	}
+
+	DB.Delete(&todo)
+	return c.SendString("Todo successfully deleted")
 }
