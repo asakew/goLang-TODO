@@ -1,9 +1,8 @@
-# goLang-TODO
+# goLang-TODO v2
 This is a TODO list for goLang projects.
 - Todo app + goFiber + Postgres + GORM + index.html get: add, delete, update
 
-## Demo Screenshot
-![github](/views/img/screenshot.png)
+
 
 ### Start Commands
 ```bash
