@@ -21,3 +21,5 @@ running server:  http://127.0.0.1:3000/
 ## Source Code
 - web framework: goFiber http://goFiber.oi/
 - css framework: mdbootstrap: https://mdbootstrap.com/
+
+Todo app + goFiber + Postgres + GORM + index.html (buttons: add, delete, update)

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    button {
+      margin: 5px;
+    }
+  </style>
+</head>
+<body>
+<h1>Todo App</h1>
+<div>
+  <input type="text" id="todoTitle" placeholder="Title">
+  <button onclick="addTodo()">Add Todo</button>
+</div>
+<div>
+  <ul id="todoList"></ul>
+</div>
+
+<script>
+  async function fetchTodos() {
+    const response = await fetch('/todos');
+    const todos = await response.json();
+    const todoList = document.getElementById('todoList');
+    todoList.innerHTML = '';
+    todos.forEach((todo) => {
+      const li = document.createElement('li');
+      li.innerHTML = `
+                    ${todo.title} - ${todo.status}
+                    <button onclick="deleteTodo(${todo.ID})">Delete</button>
+                    <button onclick="updateTodoStatus(${todo.ID}, '${todo.status}')">Update Status</button>
+                `;
+      todoList.appendChild(li);
+    });
+  }
+
+  async function addTodo() {
+    const title = document.getElementById('todoTitle').value;
+    const response = await fetch('/todos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ title: title, status: 'pending' }),
+    });
+    const newTodo = await response.json();
+    fetchTodos();
+  }
+
+  async function deleteTodo(id) {
+    await fetch(`/todos/${id}`, {
+      method: 'DELETE',
+    });
+    fetchTodos();
+  }
+
+  async function updateTodoStatus(id, currentStatus) {
+    const newStatus = currentStatus === 'pending' ? 'completed' : 'pending';
+    await fetch(`/todos/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ status: newStatus }),
+    });
+    fetchTodos();
+  }
+
+  fetchTodos();
+</script>
+</body>
+</html>
